@@ -64,9 +64,13 @@ exports.getAllUsers = async (req, res) => {
   try {
     
 
-  const findAllUsers = await userModel.find();
+  const findAllUsers = await userModel.find({isDeleted: false});
 
-  return res.status(200).send({message: "all users fetched successfully", data: findAllUsers})
+  const totalUsers = await userModel.countDocuments({isDeleted: false});
+
+  
+
+  return res.status(200).send({message: "all users fetched successfully", data: findAllUsers, count: totalUsers})
   
 
 } catch (error) {
@@ -131,10 +135,47 @@ exports.updateUserByName = async (req, res) => {
   }
   
   }
-  
-  
-  
-  
+
+  exports.updateUserByEmail = async (req, res) => {
+    const {userId} = req.params
+    const updatedData= req.body;
+    try {
+
+    
+    const updatedUser = await userModel.findByIdAndUpdate(userId, updatedData,
+       {new: true, runValidators: true})
+
+       if(!updatedUser){
+        return res.status(400).send({message: "user not found"})
+       }
 
 
+    return res.status(201).send({message: "user data updated successfully", data: updatedUser}) 
+    
+  } catch (error){
+    res.status(500).json({message: error.message})
+  }
+  }
+
+  exports.deleteUser = async(req, res) => {
+
+    const {userId} = req.params
+    try {
+      const user = await userModel.findByIdAndUpdate(userId, {isDeleted: true}, {new:true});
+
+      if(!user){
+        return res.status(400).send({message: "user nahi mila"})
+      }
+
+const remainingUsers = await userModel.countDocuments({isDeleted: false})
+
+      return res.status(200).send({message: "user has been deleted successfully", deletedUser: user, count: remainingUsers})
+      
+
+    } catch (error) {
+
+      res.status(500).send({message: "Internal server Error", message: error.message})
+      
+    }
+  }
 
