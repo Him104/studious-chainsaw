@@ -4,9 +4,11 @@ const jwt = require('jsonwebtoken')
 
 exports.register = async (req, res) => {
   try {
+   console.log('Request body:', req.body); // Add this to debug
+
     const { name, email, password } = req.body;
 
-    if(!name || !email || password){
+    if(!name || !email || !password){
 
       return res.status(400).send({message: "Name, email and password are required"})
     }
@@ -36,13 +38,21 @@ exports.login = async(req, res) => {
 
 const {email, password} = req.body
 
+if (!email || !password) {
+  return res.status(400).json({
+      message: "Email and password are required"
+  });
+}
+
+
+
 const findUser = await userModel.findOne({email})
 
 if(!findUser) {
   return res.status(401).send({message: "user not found"})
 }
 
-const isMatch = await bcrypt.compare({password: findUser.password})
+const isMatch = await bcrypt.compare(password, findUser.password)
 
 if(!isMatch){
 
