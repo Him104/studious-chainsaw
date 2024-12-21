@@ -1,23 +1,27 @@
 const userModel = require("./model");
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 exports.register = async (req, res) => {
   try {
-    console.log("entered in controller function");
     const { name, email, password } = req.body;
 
-    console.log("creating user", req.body);
+    if(!name || !email || password){
 
+      return res.status(400).send({message: "Name, email and password are required"})
+    }
+    console.log("request body", req.body)
     const existingUser = await userModel.findOne({ email })
+    console.log("exisitng user", existingUser)
     if (existingUser) {
       console.log("user already exists", existingUser)
       return res.status(400).send({ message: "user already exists", })
-
     }
-
     const hashedPassword = await bcrypt.hash(password, 10)
-
+    console.log("hashed password", hashedPassword)
 
     const createUser = await userModel.create({ name, email, password: hashedPassword });
+    console.log("creating user", createUser)
 
     console.log(" user created", createUser);
 
@@ -26,6 +30,41 @@ exports.register = async (req, res) => {
       .send({ message: "User created successfully", data: createUser });
   } catch (error) { }
 };
+
+exports.login = async(req, res) => {
+  try {
+
+const {email, password} = req.body
+
+const findUser = await userModel.findOne({email})
+
+if(!findUser) {
+  return res.status(401).send({message: "user not found"})
+}
+
+const isMatch = await bcrypt.compare({password: findUser.password})
+
+if(!isMatch){
+
+  return res.status(401).send({message: "Invalid credentials"})
+}
+
+const token = jwt.sign({userId: findUser._id, email: findUser.email}, process.env.SECRET_KEY, {expiresIn: "1h"})
+
+
+return res.status(200).send({message: "Login successful", token} )
+
+
+    
+  } catch (error) {
+
+    console.error(error)
+
+    res.status(500).send({ message: "Internal server error", error })
+    
+  }
+
+}
 
 
 exports.getUser = async (req, res) => {

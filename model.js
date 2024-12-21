@@ -6,10 +6,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Email is required"],
     trim: true,
-    matchMediator: [
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-      "Please provide a valid email address",
-    ],
+
   },
   password: {
     type: String,
@@ -18,10 +15,16 @@ const userSchema = new mongoose.Schema({
     minlegnth: [6, "Password must be at least 6 characters long"],
   },
 
-  isDeleted: {type: Boolean, default: false},
+  isDeleted: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-});
+},
+
+{
+  timestamps: true,
+}
+
+);
 
 const userModel = mongoose.model("user", userSchema);
 
