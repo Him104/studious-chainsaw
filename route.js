@@ -12,5 +12,8 @@ router.put('/update-user/:userId', controller.updateUser)
 router.put('/update-user-by-name', controller.updateUserByName)
 router.patch('/updateUser/:userId', controller.updateUserByEmail)
 router.delete('/delete-user/:userId', controller.deleteUser)
+router.get('/filter-by-age', controller.filterByAge)
+router.post('/store', controller.store)
+router.get('/group-by-city', controller.groupByCity)
 
 module.exports = router;

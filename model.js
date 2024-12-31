@@ -15,6 +15,16 @@ const userSchema = new mongoose.Schema({
     minlegnth: [6, "Password must be at least 6 characters long"],
   },
 
+  age : {
+    type: Number,
+    required: true,
+  },
+
+  city: {
+    type: String,
+    
+  },
+
   isDeleted: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

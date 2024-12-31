@@ -6,9 +6,9 @@ exports.register = async (req, res) => {
   try {
    console.log('Request body:', req.body); // Add this to debug
 
-    const { name, email, password } = req.body;
+    const { name, email, password, age } = req.body;
 
-    if(!name || !email || !password){
+    if(!name || !email || !password || !age){
 
       return res.status(400).send({message: "Name, email and password are required"})
     }
@@ -22,7 +22,7 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10)
     console.log("hashed password", hashedPassword)
 
-    const createUser = await userModel.create({ name, email, password: hashedPassword });
+    const createUser = await userModel.create({ name, email, password: hashedPassword, age });
     console.log("creating user", createUser)
 
     console.log(" user created", createUser);
@@ -238,3 +238,98 @@ exports.deleteUser = async (req, res) => {
   }
 }
 
+
+exports.filterByAge = async (req, res) => {
+  try {
+
+    const users = await userModel.find({ age: { $gt: 20 } })
+
+    if(users.length === 0) {
+      console.log("no users found")
+    }
+
+    return res.status(200).send({ message: "users filtered successfully", data: users })  
+    
+  } catch (error) {
+    res.status(500).send({ message: "Internal server Error", message: error.message })
+  }
+}
+
+exports.store = async (req, res) => {
+
+  const users = [
+    {
+      name: "John Doe",
+      email: "john@example.com",
+      password: "password123",
+      age: 25,
+      city: 'Noida'
+    },
+    {
+      name: "Jane Smith",
+      email: "jane@example.com",
+      password: "password456",
+      age: 30,
+      city: 'Jaipur'
+
+    },
+    {
+      name: "Bob Johnson",
+      email: "bob@example.com",
+      password: "password789",
+      age: 35,
+      city: 'Delhi'
+
+    },
+    {
+      name: "Alice Williams",
+      email: "alice@example.com",
+      password: "passwordabc",
+      age: 28,
+      city: 'Jhansi'  
+    },
+    {
+      name: "Charlie Brown",
+      email: "charlie@example.com",
+      password: "passwordxyz",
+      age: 22,
+      city: 'Bareilly'
+    },
+    {
+      name: "Himanshu",
+      email: "him@example.com",
+      password: "passwordxyz",
+      age: 22,
+      city: 'Noida'
+    }
+  ];
+  
+  try {
+
+   const storeData= await userModel.insertMany(users)
+
+    res.status(201).json({message: "users stored successfully", data: storeData})
+    
+  } catch (error) {
+    res.status(500).json({error: error.message})
+    
+  }
+}
+
+
+exports.groupByCity = async (req, res) => {
+  try {
+    
+const data = await userModel.aggregate([{
+  $group: {
+    _id: "$city",
+    count: { $sum: 1 }
+  }
+}])
+
+res.status(200).send({message: "data grouped successfully", data})
+
+  } catch (error) {
+    res.status(500).send({error: error.message})
+  }
+}
