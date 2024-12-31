@@ -320,9 +320,9 @@ exports.store = async (req, res) => {
 exports.groupByCity = async (req, res) => {
   try {
     
-const data = await userModel.aggregate([{
-  $group: {
-    _id: "$city",
+const data = await userModel.aggregate([
+
+{  $group: { _id: "$city",
     count: { $sum: 1 }
   }
 }])
@@ -331,5 +331,47 @@ res.status(200).send({message: "data grouped successfully", data})
 
   } catch (error) {
     res.status(500).send({error: error.message})
+  }
+}
+
+
+exports.averageAge = async (req, res) => {
+  try {
+
+    console.log("catch block")
+    const data = await userModel.aggregate([
+{ $group: { _id: null, averageAge: { $avg: '$age'}}
+  
+},
+
+    ])
+console.log(data)
+    res.status(200).json({data})
+    
+  } catch (error) {
+
+    res.status(500).send(error.message)
+    
+  }
+}
+
+
+exports.filerAndSort = async (req, res) => {
+  try {
+
+    const data = await userModel.aggregate([
+
+{ $match: { age: { $gt: 20 } } },
+{ $sort : {age: 1}}
+
+
+    ])
+
+    res.status(200).send({message: "response returned", data: data})
+    
+  } catch (error) {
+
+    res.status(500).send(error.message)
+    
   }
 }

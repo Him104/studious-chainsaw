@@ -15,5 +15,7 @@ router.delete('/delete-user/:userId', controller.deleteUser)
 router.get('/filter-by-age', controller.filterByAge)
 router.post('/store', controller.store)
 router.get('/group-by-city', controller.groupByCity)
+router.get('/avg-age', controller.averageAge)
+router.get('/filter-and-sort', controller.filerAndSort)
 
 module.exports = router;
