@@ -1,6 +1,10 @@
 const express = require('express');
 const controller = require("./controller")
 const auth = require("./middleware") 
+const multer = require('multer')
+
+const upload = multer()
+
 
 const router = express.Router();
 router.post('/register', controller.register )
@@ -17,5 +21,6 @@ router.post('/store', controller.store)
 router.get('/group-by-city', controller.groupByCity)
 router.get('/avg-age', controller.averageAge)
 router.get('/filter-and-sort', controller.filerAndSort)
+router.post('/upload', upload.single('file'), controller.uploadFile)
 
 module.exports = router;

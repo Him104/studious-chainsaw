@@ -2,6 +2,8 @@ const userModel = require("./model");
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
+const s3 = require('./aws')
+
 exports.register = async (req, res) => {
   try {
    console.log('Request body:', req.body); // Add this to debug
@@ -374,4 +376,26 @@ exports.filerAndSort = async (req, res) => {
     res.status(500).send(error.message)
     
   }
+}
+
+
+exports.uploadFile = async(req, res) => {
+
+  try {
+
+    const file = req.file;
+
+    if(!file) {
+      return res.status(400).send("Please upload a  file");
+    }
+
+    const result = await s3.uploadFile(file);
+
+    console.log("File uploaded", result)
+    
+  } catch (error) {
+    console.log(error)
+  }
+
+
 }
